@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Campus Map</string>
+    <string name="street_view_string">Street View</string>
+</resources>
