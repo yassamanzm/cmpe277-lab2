@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Campus Map</string>
     <string name="street_view_string">Street View</string>
+    <string name="location_permission_denied">"Can't get the current location! "</string>
 </resources>
