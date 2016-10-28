@@ -79,6 +79,11 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                     Intent i = new Intent(MainActivity.this, BuildingActivity.class);
                     i.putExtra("buildingName", "King Library");
                     i.putExtra("userLocation", 0);
+                    startActivity(i);*/
+                    /*
+                    Intent i = new Intent(MainActivity.this, StreetViewActivity.class);
+                    i.putExtra("latitude", -33.87365);
+                    i.putExtra("longitude", 151.20689);
                     startActivity(i);
                     */
                 }
