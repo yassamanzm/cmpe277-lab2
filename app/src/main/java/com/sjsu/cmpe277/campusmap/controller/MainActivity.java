@@ -10,24 +10,19 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.sjsu.cmpe277.campusmap.R;
 
 public class MainActivity extends FragmentActivity {
-<<<<<<< HEAD
-=======
 
     private static final int REQUEST_ERROR = 0;
->>>>>>> parent of 73e5162... Merge branch 'master' into bkNarahari
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
-<<<<<<< HEAD
+/*
         FragmentManager fm= getSupportFragmentManager();
         Fragment fragment= fm.findFragmentById(R.id.fragment_map_container);
-=======
+        */
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragment_map_container);
->>>>>>> parent of 73e5162... Merge branch 'master' into bkNarahari
 
         if (fragment == null) {
             fragment = new MapFragment();
@@ -35,8 +30,7 @@ public class MainActivity extends FragmentActivity {
                     .add(R.id.fragment_map_container, fragment)
                     .commit();
         }
-<<<<<<< HEAD
-=======
+
     }
 
     @Override
@@ -56,6 +50,5 @@ public class MainActivity extends FragmentActivity {
             return false;
         }
         return true;
->>>>>>> parent of 73e5162... Merge branch 'master' into bkNarahari
     }
 }
