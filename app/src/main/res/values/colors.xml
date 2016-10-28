@@ -7,4 +7,5 @@
     <color name="colorNote">#31F7F7</color>
     <color name="colorMainButtonBackground">#C2D9FD</color>
     <color name="colorDarkBlue">#070139</color>
+    <color name="background">#003366</color>
 </resources>
