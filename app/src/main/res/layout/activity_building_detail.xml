@@ -5,23 +5,10 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin">
-
-    <TextView
-        android:id="@+id/building_name_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:text="Martin Luther King Jr. Library"
-        android:textColor="@color/colorDarkBlue"
-        android:textSize="15sp"
-        android:textStyle="bold" />
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/building_name_text_view"
+
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
@@ -42,6 +29,16 @@
             android:paddingTop="10dp">
 
             <TextView
+                android:id="@+id/building_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Address: "
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_below="@id/building_address"
                 android:id="@+id/distance_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,7 +76,7 @@
                 android:padding="10dp"
                 android:text="@string/street_view_string"
                 android:textColor="@color/colorDarkBlue"
-                android:textSize="12sp" />
+                android:textSize="10sp" />
         </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

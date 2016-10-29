@@ -2,20 +2,21 @@ package com.sjsu.cmpe277.campusmap.controller;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -118,15 +119,15 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
                 }
                 else{
+                    Intent i = new Intent(MainActivity.this, BuildingActivity.class);
                     if (ct.closeMatch(Color.YELLOW, touchColor, tolerance)) {
-                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
                         i.putExtra(BuildingActivity.BUILDING_NAME, "King Library");
+                        i.putExtra(BuildingActivity.BUILDING_ADDRESS, "Dr. Martin Luther King, Jr. Library, 150 East San Fernando Street, San Jose, CA 95112");
                         Location lat = mCurrentLocation;
-                        //i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
-                        //i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
-                        i.putExtra(BuildingActivity.CURRENT_LATITUDE,37.333556);
-                        i.putExtra(BuildingActivity.CURRENT_LONGITUDE, -121.889678);
-                        startActivity(i);
+                        i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
+                        i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
+                        i.putExtra(BuildingActivity.BUILDING_LATITUDE,37.3358043);
+                        i.putExtra(BuildingActivity.BUILDING_LONGITUDE,-121.8860251);
                     /*
                     Intent i = new Intent(MainActivity.this, StreetViewActivity.class);
                     i.putExtra("address", "Dr. Martin Luther King, Jr. Library, 150 East San Fernando Street, San Jose, CA 95112");
@@ -135,30 +136,51 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                     startActivity(i);
                     */
                     } else if (ct.closeMatch(Color.BLACK, touchColor, tolerance)) {
-                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                        i.putExtra("buildingName", "Engineering Building");
-                        i.putExtra("userLocation", mCurrentLocation);
-                        startActivity(i);
+                        i.putExtra(BuildingActivity.BUILDING_NAME, "Engineering Building");
+                        i.putExtra(BuildingActivity.BUILDING_ADDRESS, "San José State University Charles W. Davidson College of Engineering, 1 Washington Square, San Jose, CA 95112");
+                        Location lat = mCurrentLocation;
+                        i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
+                        i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
+                        i.putExtra(BuildingActivity.BUILDING_LATITUDE,37.337656);
+                        i.putExtra(BuildingActivity.BUILDING_LONGITUDE,-121.8822646);
                     } else if (ct.closeMatch(Color.GREEN, touchColor, tolerance)) {
-                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                        i.putExtra("buildingName", "Yoshihiro Uchida Hall");
-                        i.putExtra("userLocation", mCurrentLocation);
-                        startActivity(i);
+                        i.putExtra(BuildingActivity.BUILDING_NAME, "Yoshihiro Uchida Hall");
+                        i.putExtra(BuildingActivity.BUILDING_ADDRESS, "Yoshihiro Uchida Hall, San Jose, CA 95112");
+                        Location lat = mCurrentLocation;
+                        i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
+                        i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
+                        i.putExtra(BuildingActivity.BUILDING_LATITUDE,37.3333767);
+                        i.putExtra(BuildingActivity.BUILDING_LONGITUDE,-121.88422);
                     } else if (ct.closeMatch(Color.BLUE, touchColor, tolerance)) {
-                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                        i.putExtra("buildingName", "Student Union");
-                        i.putExtra("userLocation", mCurrentLocation);
-                        startActivity(i);
+                        i.putExtra(BuildingActivity.BUILDING_NAME, "Student Union");
+                        i.putExtra(BuildingActivity.BUILDING_ADDRESS, "SJSU Student Union, South 9th Street, San Jose, CA 95112");
+                        Location lat = mCurrentLocation;
+                        i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
+                        i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
+                        i.putExtra(BuildingActivity.BUILDING_LATITUDE,37.3343414);
+                        i.putExtra(BuildingActivity.BUILDING_LONGITUDE,-121.8806146);
                     } else if (ct.closeMatch(Color.RED, touchColor, tolerance)) {
-                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                        i.putExtra("buildingName", "BBC");
-                        i.putExtra("userLocation", mCurrentLocation);
-                        startActivity(i);
+                        i.putExtra(BuildingActivity.BUILDING_NAME, "BBC");
+                        i.putExtra(BuildingActivity.BUILDING_ADDRESS, "Boccardo Business Complex, San Jose, CA 95112");
+                        Location lat = mCurrentLocation;
+                        i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
+                        i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
+                        i.putExtra(BuildingActivity.BUILDING_LATITUDE,37.3369032);
+                        i.putExtra(BuildingActivity.BUILDING_LONGITUDE,-121.8782262);
                     } else if (ct.closeMatch(Color.GRAY, touchColor, tolerance)) {
-                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                        i.putExtra("buildingName", "South Parking Garage");
-                        i.putExtra("userLocation", mCurrentLocation);
+                        i.putExtra(BuildingActivity.BUILDING_NAME, "South Parking Garage");
+                        i.putExtra(BuildingActivity.BUILDING_ADDRESS, "San Jose State University South Garage, 330 South 7th Street, San Jose, CA 95112");
+                        Location lat = mCurrentLocation;
+                        i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
+                        i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
+                        i.putExtra(BuildingActivity.BUILDING_LATITUDE,37.3327995);
+                        i.putExtra(BuildingActivity.BUILDING_LONGITUDE,-121.8801411);
+                    }
+                    if(isNetworkOn()){
                         startActivity(i);
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(),"You Need Active Internet Connection", Toast.LENGTH_LONG).show();
                     }
                 }
                 flag = true;
@@ -168,6 +190,18 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                 break;
         }
         return flag;
+    }
+
+    public boolean isNetworkOn(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if(activeNetworkInfo != null){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public int getSpotColor(int imageId, int X, int Y) {

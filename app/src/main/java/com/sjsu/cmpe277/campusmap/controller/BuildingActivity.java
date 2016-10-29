@@ -1,9 +1,14 @@
 package com.sjsu.cmpe277.campusmap.controller;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -28,32 +33,42 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
-public class BuildingActivity extends FragmentActivity {
+public class BuildingActivity extends AppCompatActivity{
 
     private static final String COLOR_DARK_BLUE = "#303F9F";
     private static final String TAG = "BuildingActivity";
     public static final String BUILDING_NAME = "buildingName";
+    public static final String BUILDING_ADDRESS = "current_address";
     public static final String CURRENT_LATITUDE = "current_latitude";
     public static final String CURRENT_LONGITUDE = "current_longitude";
+    public static final String BUILDING_LATITUDE = "building_latitude";
+    public static final String BUILDING_LONGITUDE = "building_longitude";
 
     // !!!! for test !!!! replace me with the data you get from a static map delete me later
-    private static final String BUILDING_ADDRESS = "Dr. Martin Luther King, Jr. Library, 150 East San Fernando Street, San Jose, CA 95112";
+    //private static final String BUILDING_ADDRESS = "Dr. Martin Luther King, Jr. Library, 150 East San Fernando Street, San Jose, CA 95112";
 
     private String mName;
+    private String mAddress;
     RequestQueue mRequestQueue;
 
     private TextView mNameTextView;
+    private TextView mAddressTextView;
     private TextView mDistanceTextView;
     private TextView mWalkingDurationTextView;
     private TextView mDrivingDurationTextView;
     private ImageView mBuildingImageView;
     private Button mStreetButton;
 
+    public double buildingLatitude = 0;
+    public double buildingLongitude = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_building_detail);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         // TODO should save the instance and retrieve it to handle rotation
         mRequestQueue = Volley.newRequestQueue(this);
 
@@ -64,13 +79,20 @@ public class BuildingActivity extends FragmentActivity {
         Bundle infoBundle = buildingIntent.getExtras();
         if (infoBundle != null) {
             mName = infoBundle.getString(BUILDING_NAME);
+            mAddress = infoBundle.getString(BUILDING_ADDRESS);
             currentLatitude = infoBundle.getDouble(CURRENT_LATITUDE);
             currentLongitude = infoBundle.getDouble(CURRENT_LONGITUDE);
+            buildingLatitude = infoBundle.getDouble(BUILDING_LATITUDE);
+            buildingLongitude = infoBundle.getDouble(BUILDING_LONGITUDE);
         }
 
         // Name
-        mNameTextView = (TextView) findViewById(R.id.building_name_text_view);
-        mNameTextView.setText(mName);
+        setTitle(mName);
+
+        // Address
+        mAddressTextView = (TextView) findViewById(R.id.building_address);
+        mAddressTextView.setText(mAddress);
+
 
         // Image
         // TODO: find the right image based on the name
@@ -84,8 +106,14 @@ public class BuildingActivity extends FragmentActivity {
             public void onClick(View v) {
                 Intent streetIntent = new Intent(BuildingActivity.this, StreetViewActivity.class);
                 // TODO in StreetView activity retrieve lat/long of the address based on the name
-                streetIntent.putExtra(BUILDING_NAME, mName);
-                startActivity(streetIntent);
+                streetIntent.putExtra("latitude", buildingLatitude);
+                streetIntent.putExtra("longitude", buildingLongitude);
+                if(isNetworkOn()){
+                    startActivity(streetIntent);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),"You Need Active Internet Connection", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -100,9 +128,9 @@ public class BuildingActivity extends FragmentActivity {
         String walkingUrl = null;
         String drivingUrl = null;
         try {
-            walkingUrl = GoogleMatrixRequest.createRequest(currentLatitude, currentLongitude, BUILDING_ADDRESS,
+            walkingUrl = GoogleMatrixRequest.createRequest(currentLatitude, currentLongitude, mAddress,
                     GoogleMatrixRequest.MODE_WALKING, GoogleMatrixRequest.UNITS_IMPERIAL);
-            drivingUrl = GoogleMatrixRequest.createRequest(currentLatitude, currentLongitude, BUILDING_ADDRESS,
+            drivingUrl = GoogleMatrixRequest.createRequest(currentLatitude, currentLongitude, mAddress,
                     GoogleMatrixRequest.MODE_DRIVING, GoogleMatrixRequest.UNITS_IMPERIAL);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, e.getLocalizedMessage());
@@ -124,6 +152,18 @@ public class BuildingActivity extends FragmentActivity {
         super.onStop();
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(TAG);
+        }
+    }
+
+    public boolean isNetworkOn(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if(activeNetworkInfo != null){
+            return true;
+        }
+        else{
+            return false;
         }
     }
 

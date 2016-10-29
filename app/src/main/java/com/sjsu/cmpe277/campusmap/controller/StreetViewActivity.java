@@ -52,6 +52,6 @@ public class StreetViewActivity extends FragmentActivity implements OnStreetView
     @Override
     public void onStreetViewPanoramaReady(StreetViewPanorama panorama) {
         //panorama.setPosition(new LatLng(-33.87365, 151.20689));37.3359452,-121.8857298
-        panorama.setPosition(new LatLng(37.3358043, -121.8860251));
+        panorama.setPosition(new LatLng(latitude,longitude));
     }
 }
