@@ -2,4 +2,8 @@
     <string name="app_name">Campus Map</string>
     <string name="street_view_string">Street View</string>
     <string name="location_permission_denied">"Can't get the current location! "</string>
+    <string name="volley_request_error">An internal error occurred while trying to retrieved the distance information.</string>
+    <string name="distance">Distance: %1$s</string>
+    <string name="walking_duration">Walking: %1$s</string>
+    <string name="driving_duration">Driving: %1$s</string>
 </resources>

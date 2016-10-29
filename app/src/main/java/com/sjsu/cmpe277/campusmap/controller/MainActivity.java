@@ -90,8 +90,9 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                 int tolerance = 25;
                 if (ct.closeMatch(Color.YELLOW, touchColor, tolerance)) {
                     Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                    i.putExtra("buildingName", "King Library");
-                    i.putExtra("userLocation", mCurrentLocation);
+                    i.putExtra(BuildingActivity.BUILDING_NAME, "King Library");
+                    i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
+                    i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
                     startActivity(i);
                     /*
                     Intent i = new Intent(MainActivity.this, StreetViewActivity.class);
