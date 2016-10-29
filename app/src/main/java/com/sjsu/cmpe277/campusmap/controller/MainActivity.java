@@ -14,9 +14,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -54,6 +57,25 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        // Search Bar Implementation
+        SearchView searchView =(SearchView) findViewById(R.id.searchView);
+        searchView.setQueryHint("Search Building");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(getBaseContext(), query, Toast.LENGTH_LONG).show();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Toast.makeText(getBaseContext(), newText, Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
+
         ImageView iv = (ImageView) findViewById(R.id.image);
         if (iv != null) {
             iv.setOnTouchListener(this);
@@ -92,43 +114,52 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                 int touchColor = getSpotColor(R.id.image_areas, X, Y);
                 ColorTool ct = new ColorTool();
                 int tolerance = 25;
-                if (ct.closeMatch(Color.YELLOW, touchColor, tolerance)) {
-                    Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                    i.putExtra(BuildingActivity.BUILDING_NAME, "King Library");
-                    i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
-                    i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
-                    startActivity(i);
+                if ((touchColor==0)||(touchColor == -1)){
+
+                }
+                else{
+                    if (ct.closeMatch(Color.YELLOW, touchColor, tolerance)) {
+                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
+                        i.putExtra(BuildingActivity.BUILDING_NAME, "King Library");
+                        Location lat = mCurrentLocation;
+                        //i.putExtra(BuildingActivity.CURRENT_LATITUDE, mCurrentLocation.getLatitude());
+                        //i.putExtra(BuildingActivity.CURRENT_LONGITUDE, mCurrentLocation.getLongitude());
+                        i.putExtra(BuildingActivity.CURRENT_LATITUDE,37.333556);
+                        i.putExtra(BuildingActivity.CURRENT_LONGITUDE, -121.889678);
+                        startActivity(i);
                     /*
                     Intent i = new Intent(MainActivity.this, StreetViewActivity.class);
+                    i.putExtra("address", "Dr. Martin Luther King, Jr. Library, 150 East San Fernando Street, San Jose, CA 95112");
                     i.putExtra("latitude", -121.8849988);
                     i.putExtra("longitude", 37.3355068);
                     startActivity(i);
                     */
-                } else if (ct.closeMatch(Color.BLACK, touchColor, tolerance)) {
-                    Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                    i.putExtra("buildingName", "Engineering Building");
-                    i.putExtra("userLocation", mCurrentLocation);
-                    startActivity(i);
-                } else if (ct.closeMatch(Color.GREEN, touchColor, tolerance)) {
-                    Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                    i.putExtra("buildingName", "Yoshihiro Uchida Hall");
-                    i.putExtra("userLocation", mCurrentLocation);
-                    startActivity(i);
-                } else if (ct.closeMatch(Color.BLUE, touchColor, tolerance)) {
-                    Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                    i.putExtra("buildingName", "Student Union");
-                    i.putExtra("userLocation", mCurrentLocation);
-                    startActivity(i);
-                } else if (ct.closeMatch(Color.RED, touchColor, tolerance)) {
-                    Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                    i.putExtra("buildingName", "BBC");
-                    i.putExtra("userLocation", mCurrentLocation);
-                    startActivity(i);
-                } else if (ct.closeMatch(Color.GRAY, touchColor, tolerance)) {
-                    Intent i = new Intent(MainActivity.this, BuildingActivity.class);
-                    i.putExtra("buildingName", "South Parking Garage");
-                    i.putExtra("userLocation", mCurrentLocation);
-                    startActivity(i);
+                    } else if (ct.closeMatch(Color.BLACK, touchColor, tolerance)) {
+                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
+                        i.putExtra("buildingName", "Engineering Building");
+                        i.putExtra("userLocation", mCurrentLocation);
+                        startActivity(i);
+                    } else if (ct.closeMatch(Color.GREEN, touchColor, tolerance)) {
+                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
+                        i.putExtra("buildingName", "Yoshihiro Uchida Hall");
+                        i.putExtra("userLocation", mCurrentLocation);
+                        startActivity(i);
+                    } else if (ct.closeMatch(Color.BLUE, touchColor, tolerance)) {
+                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
+                        i.putExtra("buildingName", "Student Union");
+                        i.putExtra("userLocation", mCurrentLocation);
+                        startActivity(i);
+                    } else if (ct.closeMatch(Color.RED, touchColor, tolerance)) {
+                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
+                        i.putExtra("buildingName", "BBC");
+                        i.putExtra("userLocation", mCurrentLocation);
+                        startActivity(i);
+                    } else if (ct.closeMatch(Color.GRAY, touchColor, tolerance)) {
+                        Intent i = new Intent(MainActivity.this, BuildingActivity.class);
+                        i.putExtra("buildingName", "South Parking Garage");
+                        i.putExtra("userLocation", mCurrentLocation);
+                        startActivity(i);
+                    }
                 }
                 flag = true;
                 break;
@@ -141,6 +172,12 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
     public int getSpotColor(int imageId, int X, int Y) {
         ImageView image = (ImageView) findViewById(imageId);
+        /*
+        image.setDrawingCacheEnabled(true);
+        Bitmap colorSpot = Bitmap.createBitmap(image.getDrawingCache());
+        image.setDrawingCacheEnabled(false);
+        return colorSpot.getPixel(X, Y);
+        */
         if (image == null) {
             Log.d("ImageAreasActivity", "Color spot image not found");
             return 0;
