@@ -1,6 +1,7 @@
 package com.sjsu.cmpe277.campusmap.controller;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -88,58 +89,41 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                 ColorTool ct = new ColorTool();
                 int tolerance = 25;
                 if (ct.closeMatch(Color.YELLOW, touchColor, tolerance)) {
-                    Toast.makeText(getApplicationContext(), "King Library", Toast.LENGTH_SHORT).show();
-                    /*
                     Intent i = new Intent(MainActivity.this, BuildingActivity.class);
                     i.putExtra("buildingName", "King Library");
-                    i.putExtra("userLocation", 0);
-                    startActivity(i);*/
+                    i.putExtra("userLocation", mCurrentLocation);
+                    startActivity(i);
                     /*
                     Intent i = new Intent(MainActivity.this, StreetViewActivity.class);
-                    i.putExtra("latitude", -33.87365);
-                    i.putExtra("longitude", 151.20689);
+                    i.putExtra("latitude", -121.8849988);
+                    i.putExtra("longitude", 37.3355068);
                     startActivity(i);
                     */
                 } else if (ct.closeMatch(Color.BLACK, touchColor, tolerance)) {
-                    Toast.makeText(getApplicationContext(), "Engineering Building", Toast.LENGTH_SHORT).show();
-                    /*
                     Intent i = new Intent(MainActivity.this, BuildingActivity.class);
                     i.putExtra("buildingName", "Engineering Building");
-                    i.putExtra("userLocation", 0);
+                    i.putExtra("userLocation", mCurrentLocation);
                     startActivity(i);
-                    */
                 } else if (ct.closeMatch(Color.GREEN, touchColor, tolerance)) {
-                    Toast.makeText(getApplicationContext(), "Yoshihiro Uchida Hall", Toast.LENGTH_SHORT).show();
-                    /*
                     Intent i = new Intent(MainActivity.this, BuildingActivity.class);
                     i.putExtra("buildingName", "Yoshihiro Uchida Hall");
-                    i.putExtra("userLocation", 0);
+                    i.putExtra("userLocation", mCurrentLocation);
                     startActivity(i);
-                    */
                 } else if (ct.closeMatch(Color.BLUE, touchColor, tolerance)) {
-                    Toast.makeText(getApplicationContext(), "Student Union", Toast.LENGTH_SHORT).show();
-                    /*
                     Intent i = new Intent(MainActivity.this, BuildingActivity.class);
                     i.putExtra("buildingName", "Student Union");
-                    i.putExtra("userLocation", 0);
+                    i.putExtra("userLocation", mCurrentLocation);
                     startActivity(i);
-                    */
                 } else if (ct.closeMatch(Color.RED, touchColor, tolerance)) {
-                    Toast.makeText(getApplicationContext(), "BBC", Toast.LENGTH_SHORT).show();
-                    /*
                     Intent i = new Intent(MainActivity.this, BuildingActivity.class);
                     i.putExtra("buildingName", "BBC");
-                    i.putExtra("userLocation", 0);
+                    i.putExtra("userLocation", mCurrentLocation);
                     startActivity(i);
-                    */
                 } else if (ct.closeMatch(Color.GRAY, touchColor, tolerance)) {
-                    Toast.makeText(getApplicationContext(), "South Parking Garage", Toast.LENGTH_SHORT).show();
-                    /*
                     Intent i = new Intent(MainActivity.this, BuildingActivity.class);
                     i.putExtra("buildingName", "South Parking Garage");
-                    i.putExtra("userLocation", 0);
+                    i.putExtra("userLocation", mCurrentLocation);
                     startActivity(i);
-                    */
                 }
                 flag = true;
                 break;
