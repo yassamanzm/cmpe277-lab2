@@ -343,8 +343,8 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     protected void onStop() {
         if (mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
-        if (mBitmap != null)
-            mBitmap.recycle();
+//        if (mBitmap != null)
+//            mBitmap.recycle();
         super.onStop();
     }
 
