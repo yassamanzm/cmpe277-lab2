@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -19,6 +22,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -54,6 +58,8 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
     private Location mCurrentLocation;
 
+    private ImageView mCampusImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,10 +83,24 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
             }
         });
 
-        ImageView iv = (ImageView) findViewById(R.id.image);
-        if (iv != null) {
-            iv.setOnTouchListener(this);
+        mCampusImage = (ImageView) findViewById(R.id.image);
+        if (mCampusImage != null) {
+            mCampusImage.setOnTouchListener(this);
         }
+
+        ImageButton compassImage = (ImageButton) findViewById(R.id.compass_image);
+        compassImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),
+                        "("+ mCurrentLocation.getLatitude() + ", " + mCurrentLocation.getLongitude() + ")", Toast.LENGTH_LONG).show();
+
+                // TODO:  calculate x and y here
+
+                drawUserLocation(500, 500);
+
+            }
+        });
 
         buildGoogleApiClient();
         createLocationRequest();
@@ -95,6 +115,8 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         final int action = me.getAction();
         final int X = (int) me.getX();
         final int Y = (int) me.getY();
+
+        Log.d("***XY***", "(" + X + ", " + Y + ")");
 
         ImageView image = (ImageView) v.findViewById(R.id.image);
         if (image == null)
@@ -422,4 +444,26 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                 break;
         }
     }
+
+    private void drawUserLocation(int centerX, int centerY ) {
+        BitmapFactory.Options myOptions = new BitmapFactory.Options();
+        myOptions.inScaled = false;
+        myOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// important
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.campusmap,myOptions);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.RED);
+
+        Bitmap workingBitmap = Bitmap.createBitmap(bitmap);
+        Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+
+        Canvas canvas = new Canvas(mutableBitmap);
+        canvas.drawCircle(centerX, centerY, 10, paint);
+
+        mCampusImage.setAdjustViewBounds(true);
+        mCampusImage.setImageBitmap(mutableBitmap);
+    }
+
 }
