@@ -15,7 +15,8 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDFvupY2LrdcqRI6d9bwISFab9P1ZF1M3o" />
-        <activity android:name=".controller.MainActivity" >
+        <activity android:name=".controller.MainActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
