@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -40,6 +41,8 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.sjsu.cmpe277.campusmap.R;
+import com.sjsu.cmpe277.campusmap.model.Building;
+import com.sjsu.cmpe277.campusmap.model.Information;
 
 public class MainActivity extends FragmentActivity implements View.OnTouchListener,
         GoogleApiClient.ConnectionCallbacks,
@@ -59,6 +62,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     private Location mCurrentLocation;
 
     private ImageView mCampusImage;
+    private Bitmap mBitmap;
 
     private int rect_1_x = 94;
     private int rect_1_y = 734;
@@ -84,6 +88,8 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        // this activity only supports portrait orientation
+
         // Search Bar Implementation
         SearchView searchView =(SearchView) findViewById(R.id.searchView);
         searchView.setQueryHint("Search Building");
@@ -91,13 +97,15 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(getBaseContext(), query, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getBaseContext(), query, Toast.LENGTH_LONG).show();
+                shouldHighlightBuilding(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 //Toast.makeText(getBaseContext(), newText, Toast.LENGTH_LONG).show();
+                shouldHighlightBuilding(newText);
                 return false;
             }
         });
@@ -118,7 +126,6 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                 int x = (int)calculateX(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 int y = (int)calculateY(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 drawUserLocation(x,y);
-
             }
         });
 
@@ -126,7 +133,6 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         createLocationRequest();
         buildLocationSettingsRequest();
         checkLocationSettings();
-
     }
 
     public double calculateX(double x, double y){
@@ -337,6 +343,8 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     protected void onStop() {
         if (mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
+//        if (mBitmap != null)
+//            mBitmap.recycle();
         super.onStop();
     }
 
@@ -529,7 +537,6 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         Bitmap workingBitmap = Bitmap.createBitmap(bitmap);
         Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
-
         Canvas canvas = new Canvas(mutableBitmap);
         canvas.drawCircle((int)(centerX/2.15), (int)((centerY - 300)/2.14), 10, paint);
 
@@ -537,4 +544,56 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         mCampusImage.setImageBitmap(mutableBitmap);
     }
 
+    private void drawRectangle(float leftX, float topY, float rightX, float bottomY ) {
+        BitmapFactory.Options myOptions = new BitmapFactory.Options();
+        myOptions.inScaled = false;
+        myOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// important
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.campusmap,myOptions);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.GREEN);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(5);
+
+        Bitmap workingBitmap = Bitmap.createBitmap(bitmap);
+        mBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        mBitmap.setHasAlpha(true);
+
+        Canvas canvas = new Canvas(mBitmap);
+        canvas.drawRoundRect(new RectF(leftX, topY, rightX, bottomY), 2, 2, paint);
+
+        mCampusImage.setAdjustViewBounds(true);
+        mCampusImage.setImageBitmap(mBitmap);
+        mCampusImage.invalidate();
+    }
+
+    private boolean shouldHighlightBuilding(String name) {
+        String lowerName= name.toLowerCase();
+        Building building = null;
+
+        if (Information.BUILDING_MAP.containsKey(lowerName) ) {
+            building = Information.BUILDING_MAP.get(lowerName);
+            Log.d(TAG, "*** " + lowerName);
+        } else if (Information.SHORT_NAME_MAP.containsKey(lowerName)) {
+            name = Information.SHORT_NAME_MAP.get(lowerName).toLowerCase();
+            building = Information.BUILDING_MAP.get(name);
+            Log.d(TAG, "*** query: " + lowerName);
+            Log.d(TAG, "*** Full name: " + name);
+        }
+        if (building != null) {
+            Log.d(TAG, "Rectangle Coordinates: (" + building.getLeftX()  + ", " + building.getTopY() + ") " +
+                    "( " + building.getRightX() + ", " +  building.getBottomY() + ")");
+            // draw the rectangle or put a marker
+            drawRectangle(building.getLeftX(), building.getTopY(), building.getRightX(), building.getBottomY());
+            return true;
+        }
+        // TODO clear the map if necessary
+//        if (mBitmap != null) {
+//            mBitmap.eraseColor(Color.TRANSPARENT);
+//            mCampusImage.invalidate();
+//        }
+//        Toast.makeText(getBaseContext(), R.string.not_found_building, Toast.LENGTH_LONG).show();
+        return false;
+    }
 }

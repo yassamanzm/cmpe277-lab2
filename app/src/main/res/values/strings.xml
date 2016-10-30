@@ -7,4 +7,5 @@
     <string name="walking_duration">Walking : %1$s</string>
     <string name="driving_duration">Driving : %1$s</string>
     <string name="search_title">Enter Building Name</string>
+    <string name="not_found_building">Could not find the building!</string>
 </resources>

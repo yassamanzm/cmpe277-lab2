@@ -1,13 +1,10 @@
 package com.sjsu.cmpe277.campusmap.model;
 
-/**
- * Created by Yassaman on 10/16/2016.
- */
-
 public class Building {
 
-    private String mName;
-    private String mDescription;
+    private String mFullName;
+    private String mShortName;
+    private String mAddress;
     private double mLatitude;
     private double mLongitude;
     private float mLeftX;
@@ -15,18 +12,18 @@ public class Building {
     private float mTopY;
     private float mBottomY;
 
-    public Building(String name, float leftX, float rightX, float topY, float bottomY) {
-        this.mName = name;
-        this.mLeftX = leftX;
-        this.mRightX = rightX;
-        this.mTopY = topY;
-        this.mBottomY = bottomY;
+    public Building(String shortName, String address, double latitude, double longitude) {
+        this.mShortName = shortName;
+        this.mAddress = address;
+        this.mLatitude = latitude;
+        this.mLongitude = longitude;
     }
 
-    public Building(String name, String description, double latitude, double longitude,
-                    float leftX, float rightX, float topY, float bottomY) {
-        this.mName = name;
-        this.mDescription = description;
+    public Building(String fullName, String shortName, String address, double latitude,
+                    double longitude, float leftX, float topY, float rightX, float bottomY) {
+        this.mFullName = fullName;
+        this.mShortName = shortName;
+        this.mAddress = address;
         this.mLatitude = latitude;
         this.mLongitude = longitude;
         this.mLeftX = leftX;
@@ -35,8 +32,32 @@ public class Building {
         this.mBottomY = bottomY;
     }
 
-    public String getName() {
-        return mName;
+    public void setShortName(String shortName) {
+        this.mShortName = shortName;
+    }
+
+    public void setLeftX(float leftX) {
+        this.mLeftX = leftX;
+    }
+
+    public void setRightX(float rightX) {
+        this.mRightX = rightX;
+    }
+
+    public void setTopY(float topY) {
+        this.mTopY = topY;
+    }
+
+    public void setBottomY(float bottomY) {
+        this.mBottomY = bottomY;
+    }
+
+    public String getFullName() {
+        return mFullName;
+    }
+
+    public String getShortName() {
+        return mShortName;
     }
 
     public float getLeftX() {
@@ -55,12 +76,12 @@ public class Building {
         return mBottomY;
     }
 
-    public String getDescription() {
-        return mDescription;
+    public String getAddress() {
+        return mAddress;
     }
 
-    public void setDescription(String description) {
-        this.mDescription = description;
+    public void setAddress(String address) {
+        this.mAddress = address;
     }
 
     public double getLatitude() {
@@ -82,8 +103,9 @@ public class Building {
     @Override
     public String toString() {
         return "Building{" +
-                "mName='" + mName + '\'' +
-                ", mDescription='" + mDescription + '\'' +
+                "mFullName='" + mFullName + '\'' +
+                ", mShortName='" + mShortName + '\'' +
+                ", mAddress='" + mAddress + '\'' +
                 ", mLatitude=" + mLatitude +
                 ", mLongitude=" + mLongitude +
                 ", mLeftX=" + mLeftX +
