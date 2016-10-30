@@ -89,6 +89,11 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         setContentView(R.layout.activity_map);
 
         // this activity only supports portrait orientation
+        // create a bitmap from the campus image so later on we can draw on it
+        BitmapFactory.Options myOptions = new BitmapFactory.Options();
+        myOptions.inScaled = false;
+        myOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// important
+        mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.campusmap,myOptions);
 
         // Search Bar Implementation
         SearchView searchView =(SearchView) findViewById(R.id.searchView);
@@ -525,16 +530,12 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     }
 
     private void drawUserLocation(int centerX, int centerY ) {
-        BitmapFactory.Options myOptions = new BitmapFactory.Options();
-        myOptions.inScaled = false;
-        myOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// important
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.campusmap,myOptions);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.RED);
 
-        Bitmap workingBitmap = Bitmap.createBitmap(bitmap);
+        Bitmap workingBitmap = Bitmap.createBitmap(mBitmap);
         Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
         Canvas canvas = new Canvas(mutableBitmap);
@@ -542,30 +543,34 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
         mCampusImage.setAdjustViewBounds(true);
         mCampusImage.setImageBitmap(mutableBitmap);
+        mCampusImage.invalidate();
     }
 
     private void drawRectangle(float leftX, float topY, float rightX, float bottomY ) {
-        BitmapFactory.Options myOptions = new BitmapFactory.Options();
-        myOptions.inScaled = false;
-        myOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// important
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.campusmap,myOptions);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.GREEN);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
 
-        Bitmap workingBitmap = Bitmap.createBitmap(bitmap);
-        mBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
-        mBitmap.setHasAlpha(true);
+        Bitmap workingBitmap = Bitmap.createBitmap(mBitmap);
+        Bitmap mutableBitmap  = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        mutableBitmap .setHasAlpha(true);
 
-        Canvas canvas = new Canvas(mBitmap);
+        Canvas canvas = new Canvas(mutableBitmap);
         canvas.drawRoundRect(new RectF(leftX, topY, rightX, bottomY), 2, 2, paint);
 
         mCampusImage.setAdjustViewBounds(true);
-        mCampusImage.setImageBitmap(mBitmap);
+        mCampusImage.setImageBitmap(mutableBitmap);
         mCampusImage.invalidate();
+    }
+
+    private void clearMap() {
+        if (mBitmap != null) {
+            mCampusImage.setImageBitmap(mBitmap);
+            mCampusImage.invalidate();
+        }
     }
 
     private boolean shouldHighlightBuilding(String name) {
@@ -588,11 +593,8 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
             drawRectangle(building.getLeftX(), building.getTopY(), building.getRightX(), building.getBottomY());
             return true;
         }
-        // TODO clear the map if necessary
-//        if (mBitmap != null) {
-//            mBitmap.eraseColor(Color.TRANSPARENT);
-//            mCampusImage.invalidate();
-//        }
+        // clear the map if necessary
+        clearMap();
 //        Toast.makeText(getBaseContext(), R.string.not_found_building, Toast.LENGTH_LONG).show();
         return false;
     }
