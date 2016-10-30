@@ -531,7 +531,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
 
         Canvas canvas = new Canvas(mutableBitmap);
-        canvas.drawCircle(centerX, centerY, 10, paint);
+        canvas.drawCircle((int)(centerX/2.15), (int)((centerY - 300)/2.14), 10, paint);
 
         mCampusImage.setAdjustViewBounds(true);
         mCampusImage.setImageBitmap(mutableBitmap);
