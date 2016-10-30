@@ -66,21 +66,23 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
     private int rect_1_x = 94;
     private int rect_1_y = 734;
-    private int rect_2_x = 1295;
-    private int rect_2_y = 723;
+    private int rect_2_x = 1298;
+    private int rect_2_y = 734;
     private int rect_3_x = 94;
     private int rect_3_y = 1736;
-    private int rect_4_x = 1295;
-    private int rect_4_y = 1732;
+    private int rect_4_x = 1298;
+    private int rect_4_y = 1736;
 
-    private double rect_a_x = 37.335823;
-    private double rect_a_y = -121.885946;
-    private double rect_b_x = 37.338794;
-    private double rect_b_y = -121.879736;
-    private double rect_c_x = 37.331637;
-    private double rect_c_y = -121.882829;
-    private double rect_d_x = 37.334589;
-    private double rect_d_y = -121.876582;
+    private double rect_a_x = 37.335822;
+    private double rect_a_y = -121.886025;
+    private double rect_b_x = 37.338846;
+    private double rect_b_y = -121.879700;
+    private double rect_c_x = 37.331568;
+    private double rect_c_y = -121.882838;
+    private double rect_d_x = 37.334563;
+    private double rect_d_y = -121.876487;
+    private double lat = 0.0;
+    private double lon = 0.0;
 
 
     @Override
@@ -128,8 +130,9 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                         "("+ mCurrentLocation.getLatitude() + ", " + mCurrentLocation.getLongitude() + ")", Toast.LENGTH_LONG).show();
 
                 // TODO:  calculate x and y here
-                int x = (int)calculateX(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                int y = (int)calculateY(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                changeLatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                int x = (int)Math.round(calculateX());
+                int y = (int)Math.round(calculateY());
                 drawUserLocation(x,y);
             }
         });
@@ -140,18 +143,17 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         checkLocationSettings();
     }
 
-    public double calculateX(double x, double y){
+    public void changeLatLng(double x, double y){
         double theta = 0.0;
-        double lat = 0.0;
-        double lon = 0.0;
         if(x > rect_a_x){
             double x1 = Math.abs(x) - Math.abs(rect_a_x);
             x1 = Math.pow(x1, 2);
             double y1 = Math.abs(y)- Math.abs(rect_a_y);
             y1 = Math.pow(y1, 2);
-            double p = Math.sqrt(Math.pow((Math.abs(x) - Math.abs(rect_a_x)), 2) - Math.pow((Math.abs(y) - Math.abs(rect_a_y)), 2));
-            theta = Math.sin((x-rect_a_x)/p);
-            theta = 20 - theta;
+            double p = Math.sqrt(x1 + y1);
+            double value = Math.toRadians((rect_a_x-x)/p);
+            theta = Math.sinh(value);
+            theta = 25 - theta;
             lat = rect_a_x - (p*Math.sin(theta));
             lon = rect_a_y + (p*Math.cos(theta));
         }
@@ -160,34 +162,24 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
             x1 = Math.pow(x1, 2);
             double y1 = Math.abs(rect_a_y) - Math.abs(y);
             y1 = Math.pow(y1, 2);
-            double p = Math.sqrt(Math.pow((Math.abs(rect_a_x) - Math.abs(x)), 2) + Math.pow((Math.abs(rect_a_y) - Math.abs(y)), 2));
-            theta = Math.sin((rect_a_x-x)/p);
-            theta = 20 + theta;
+            double p = Math.sqrt(x1 + y1);
+            double value = Math.toRadians((rect_a_x-x)/p);
+            theta = Math.sinh(value);
+            theta = (int)(25 + theta);
             lat = rect_a_x - (p*Math.sin(theta));
             lon = rect_a_y + (p*Math.cos(theta));
         }
-        double px =(((rect_2_x - rect_1_x)*(lon - rect_a_y))/(rect_c_y - rect_a_y)) + (double)rect_1_x ;
+    }
+
+    public double calculateX(){
+        double xy = (((rect_2_x - rect_1_x)*(lon - rect_a_y))/(rect_b_y - rect_a_y));
+        double px = xy + (double)rect_1_x ;
         return px;
     }
 
-    public double calculateY(double x, double y){
-        double p = Math.sqrt(Math.pow((Math.abs(x) - Math.abs(rect_a_x)), 2) + Math.pow((Math.abs(y) - Math.abs(rect_a_y)), 2));
-        double theta = 0.0;
-        double lat = 0.0;
-        double lon = 0.0;
-        if(x > rect_a_x){
-            theta = Math.sin((x-rect_a_x)/p);
-            theta = 20 - theta;
-            lat = rect_a_x - (p*Math.sin(theta));
-            lon = rect_a_y + (p*Math.cos(theta));
-        }
-        else{
-            theta = Math.sin((rect_a_x-x)/p);
-            theta = 20 + theta;
-            lat = rect_a_x - (p*Math.sin(theta));
-            lon = rect_a_y + (p*Math.cos(theta));
-        }
-        double py =(((rect_3_y - rect_1_y)*(lat - rect_a_x))/(rect_c_x - rect_a_x)) + (double)rect_1_y ;
+    public double calculateY(){
+        double xy = (((rect_3_y - rect_1_y)*(lat - rect_a_x))/(rect_b_x - rect_a_x));
+        double py = xy + (double)rect_1_y ;
         return py;
     }
 
