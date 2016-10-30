@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
@@ -17,7 +19,7 @@ import com.sjsu.cmpe277.campusmap.R;
 
 import java.util.List;
 
-public class StreetViewActivity extends FragmentActivity implements OnStreetViewPanoramaReadyCallback{
+public class StreetViewActivity extends AppCompatActivity implements OnStreetViewPanoramaReadyCallback{
 
     private double latitude = 0.0;
     private double longitude = 0.0;
@@ -35,7 +37,9 @@ public class StreetViewActivity extends FragmentActivity implements OnStreetView
                     (StreetViewPanoramaFragment) getFragmentManager()
                             .findFragmentById(R.id.streetviewpanorama);
             streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
         /*
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragment_street_container);
