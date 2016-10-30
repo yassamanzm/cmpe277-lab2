@@ -43,12 +43,13 @@ public class BuildingActivity extends AppCompatActivity{
     public static final String CURRENT_LONGITUDE = "current_longitude";
     public static final String BUILDING_LATITUDE = "building_latitude";
     public static final String BUILDING_LONGITUDE = "building_longitude";
-
+    public static final String PIC_FLAG = "picFlag";
     // !!!! for test !!!! replace me with the data you get from a static map delete me later
     //private static final String BUILDING_ADDRESS = "Dr. Martin Luther King, Jr. Library, 150 East San Fernando Street, San Jose, CA 95112";
 
     private String mName;
     private String mAddress;
+    public int picFlag;
     RequestQueue mRequestQueue;
 
     private TextView mNameTextView;
@@ -84,6 +85,8 @@ public class BuildingActivity extends AppCompatActivity{
             currentLongitude = infoBundle.getDouble(CURRENT_LONGITUDE);
             buildingLatitude = infoBundle.getDouble(BUILDING_LATITUDE);
             buildingLongitude = infoBundle.getDouble(BUILDING_LONGITUDE);
+            picFlag = infoBundle.getInt(PIC_FLAG);
+
         }
 
         // Name
@@ -97,7 +100,18 @@ public class BuildingActivity extends AppCompatActivity{
         // Image
         // TODO: find the right image based on the name
         mBuildingImageView = (ImageView) findViewById(R.id.building_image_view);
+        if(picFlag==1)
         mBuildingImageView.setImageResource(R.drawable.mlk);
+        else if(picFlag==2)
+            mBuildingImageView.setImageResource(R.drawable.eb);
+        else if(picFlag==3)
+            mBuildingImageView.setImageResource(R.drawable.yuh);
+        else if(picFlag==4)
+            mBuildingImageView.setImageResource(R.drawable.su);
+        else if(picFlag==5)
+            mBuildingImageView.setImageResource(R.drawable.bbc);
+        else if(picFlag==6)
+            mBuildingImageView.setImageResource(R.drawable.sjsp);
 
         // Street view button
         mStreetButton = (Button) findViewById(R.id.street_view_button);
