@@ -63,7 +63,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
     private ImageView mCampusImage;
     private Bitmap mBitmap;
-    private boolean mShowUserLocation;
+    private boolean mShowUserLocation = false;
     private int userX;
     private int userY;
     private String searchQuery;
@@ -128,16 +128,23 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         compassImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),
-                        "("+ mCurrentLocation.getLatitude() + ", " + mCurrentLocation.getLongitude() + ")", Toast.LENGTH_LONG).show();
 
-                mShowUserLocation = true;
-                
-                // calculate user's x and y here
-                changeLatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                userX = (int)Math.round(calculateX());
-                userY = (int)Math.round(calculateY());
-                drawUserLocation();
+                if(mShowUserLocation){
+                    // Write the delete userlocation icon here
+                }
+                else{
+                    if(inBounds(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())){
+                        mShowUserLocation = true;
+                        // calculate user's x and y here
+                        changeLatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                        userX = (int)Math.round(calculateX());
+                        userY = (int)Math.round(calculateY());
+                        drawUserLocation();
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(),"You Need to be on SJSU Campus to be able to show the marker here", Toast.LENGTH_LONG).show();
+                    }
+                }
             }
         });
 
@@ -145,6 +152,15 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         createLocationRequest();
         buildLocationSettingsRequest();
         checkLocationSettings();
+    }
+
+    public boolean inBounds(double x, double y){
+        if((x >= rect_c_x)&&(x <= rect_b_x)&&(y >= rect_a_y)&&( y <= rect_d_y)){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public void changeLatLng(double x, double y){
