@@ -25,7 +25,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.sjsu.cmpe277.campusmap.R;
+import com.sjsu.cmpe277.campusmap.model.Building;
 import com.sjsu.cmpe277.campusmap.model.GoogleMatrixRequest;
+import com.sjsu.cmpe277.campusmap.model.Information;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -80,17 +82,20 @@ public class BuildingActivity extends AppCompatActivity{
         Bundle infoBundle = buildingIntent.getExtras();
         if (infoBundle != null) {
             mName = infoBundle.getString(BUILDING_NAME);
-            mAddress = infoBundle.getString(BUILDING_ADDRESS);
             currentLatitude = infoBundle.getDouble(CURRENT_LATITUDE);
             currentLongitude = infoBundle.getDouble(CURRENT_LONGITUDE);
-            buildingLatitude = infoBundle.getDouble(BUILDING_LATITUDE);
-            buildingLongitude = infoBundle.getDouble(BUILDING_LONGITUDE);
             picFlag = infoBundle.getInt(PIC_FLAG);
 
         }
 
         // Name
         setTitle(mName);
+
+        // Accessing Building details from information
+        Building detail_building = Information.BUILDING_MAP.get(mName.toLowerCase());
+        mAddress = detail_building.getAddress();
+        buildingLatitude = detail_building.getLatitude();
+        buildingLongitude = detail_building.getLongitude();
 
         // Address
         mAddressTextView = (TextView) findViewById(R.id.building_address);
@@ -130,6 +135,7 @@ public class BuildingActivity extends AppCompatActivity{
                 }
             }
         });
+
 
         // Travel Info
         mDistanceTextView = (TextView) findViewById(R.id.distance_text_view);
