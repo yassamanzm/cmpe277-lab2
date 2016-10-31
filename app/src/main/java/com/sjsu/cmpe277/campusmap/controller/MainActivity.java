@@ -66,7 +66,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     private boolean mShowUserLocation = false;
     private int userX;
     private int userY;
-    private String searchQuery;
+    private String mSearchQuery;
 
     private int rect_1_x = 94;
     private int rect_1_y = 734;
@@ -96,6 +96,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
         // this activity only supports portrait orientation
         // create a bitmap from the campus image so later on we can draw on it
+        mSearchQuery= "";
         BitmapFactory.Options myOptions = new BitmapFactory.Options();
         myOptions.inScaled = false;
         myOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// important
@@ -108,13 +109,15 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                shouldHighlightBuilding(query);
+                mSearchQuery = query;
+                shouldHighlightBuilding();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                shouldHighlightBuilding(newText);
+                mSearchQuery = newText;
+                shouldHighlightBuilding();
                 return false;
             }
         });
@@ -128,23 +131,18 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         compassImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(mShowUserLocation){
-                    // Write the delete userlocation icon here
+                if (inBounds(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())) {
+                    // calculate user's x and y here
+                    changeLatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                    userX = (int) Math.round(calculateX());
+                    userY = (int) Math.round(calculateY());
+                    // flip the flag
+                    mShowUserLocation = !mShowUserLocation;
+                } else {
+                    mShowUserLocation = false;
+                    Toast.makeText(getApplicationContext(), "You Need to be on SJSU Campus to be able to show the marker here", Toast.LENGTH_LONG).show();
                 }
-                else{
-                    if(inBounds(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())){
-                        mShowUserLocation = true;
-                        // calculate user's x and y here
-                        changeLatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                        userX = (int)Math.round(calculateX());
-                        userY = (int)Math.round(calculateY());
-                        drawUserLocation();
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(),"You Need to be on SJSU Campus to be able to show the marker here", Toast.LENGTH_LONG).show();
-                    }
-                }
+                shouldHighlightBuilding();
             }
         });
 
@@ -320,7 +318,10 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                 return 0;
             } else {
                 image.setDrawingCacheEnabled(false);
-                return colorSpot.getPixel(X, Y);
+                if (Y >= 0 && Y < colorSpot.getHeight()) {
+                    return colorSpot.getPixel(X, Y);
+                }
+                return 0;
             }
         }
     }
@@ -549,6 +550,8 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         canvas.drawRoundRect(new RectF(leftX, topY, rightX, bottomY), 2, 2, paint);
 
         if (mShowUserLocation) {
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(Color.RED);
             canvas.drawCircle((int)(userX/2.15), (int)((userY - 300)/2.14), 10, paint);
         }
 
@@ -564,17 +567,17 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         }
     }
 
-    private boolean shouldHighlightBuilding(String name) {
-        String lowerName= name.toLowerCase();
+    private boolean shouldHighlightBuilding() {
+        String lowerQuery= mSearchQuery.toLowerCase();
         Building building = null;
 
-        if (Information.BUILDING_MAP.containsKey(lowerName) ) {
-            building = Information.BUILDING_MAP.get(lowerName);
-            Log.d(TAG, "*** " + lowerName);
-        } else if (Information.SHORT_NAME_MAP.containsKey(lowerName)) {
-            name = Information.SHORT_NAME_MAP.get(lowerName).toLowerCase();
+        if (Information.BUILDING_MAP.containsKey(lowerQuery) ) {
+            building = Information.BUILDING_MAP.get(lowerQuery);
+            Log.d(TAG, "*** " + lowerQuery);
+        } else if (Information.SHORT_NAME_MAP.containsKey(lowerQuery)) {
+            String name = Information.SHORT_NAME_MAP.get(lowerQuery).toLowerCase();
             building = Information.BUILDING_MAP.get(name);
-            Log.d(TAG, "*** query: " + lowerName);
+            Log.d(TAG, "*** query: " + lowerQuery);
             Log.d(TAG, "*** Full name: " + name);
         }
         if (building != null) {
@@ -589,7 +592,6 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         if (mShowUserLocation) {
             drawUserLocation();
         }
-//        Toast.makeText(getBaseContext(), R.string.not_found_building, Toast.LENGTH_LONG).show();
         return false;
     }
 }
