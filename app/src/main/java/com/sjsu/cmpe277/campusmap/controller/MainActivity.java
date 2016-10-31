@@ -346,6 +346,12 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mBitmap= null;
+    }
+
     private boolean checkPlayServices() {
         GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
         int result = googleAPI.isGooglePlayServicesAvailable(this);
