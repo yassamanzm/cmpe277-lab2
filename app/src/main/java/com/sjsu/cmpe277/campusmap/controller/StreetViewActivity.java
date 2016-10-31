@@ -24,8 +24,6 @@ public class StreetViewActivity extends AppCompatActivity implements OnStreetVie
     private double latitude = 0.0;
     private double longitude = 0.0;
 
-    // MLK = 37.3358043,-121.8860251;
-    //
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,22 +38,10 @@ public class StreetViewActivity extends AppCompatActivity implements OnStreetVie
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
-        /*
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragment_street_container);
-
-        if (fragment == null) {
-            fragment = new StreetFragment();
-            fm.beginTransaction()
-                    .add(R.id.fragment_street_container, fragment)
-                    .commit();
-        }
-        */
     }
 
     @Override
     public void onStreetViewPanoramaReady(StreetViewPanorama panorama) {
-        //panorama.setPosition(new LatLng(-33.87365, 151.20689));37.3359452,-121.8857298
         panorama.setPosition(new LatLng(latitude,longitude));
     }
 }

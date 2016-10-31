@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import com.sjsu.cmpe277.campusmap.R;
 
 public class StreetFragment extends Fragment {
-    // https://developers.google.com/maps/documentation/android-api/streetview
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

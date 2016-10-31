@@ -69,9 +69,9 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     private String mSearchQuery;
 
     private int rect_1_x = 94;
-    private int rect_1_y = 734;
+    private int rect_1_y = 719;
     private int rect_2_x = 1298;
-    private int rect_2_y = 734;
+    private int rect_2_y = 719;
     private int rect_3_x = 94;
     private int rect_3_y = 1736;
     private int rect_4_x = 1298;
@@ -133,11 +133,9 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
             public void onClick(View v) {
                 if (inBounds(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())) {
                     // calculate user's x and y here
-                    changeLatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                    userX = (int) Math.round(calculateX());
-                    userY = (int) Math.round(calculateY());
-                    // flip the flag
+                    pointLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                     mShowUserLocation = !mShowUserLocation;
+
                 } else {
                     mShowUserLocation = false;
                     Toast.makeText(getApplicationContext(), "You Need to be on SJSU Campus to be able to show the marker here", Toast.LENGTH_LONG).show();
@@ -152,6 +150,43 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         checkLocationSettings();
     }
 
+    public void pointLocation(double m, double n){
+        double tempBearing = getBearing(m,n);
+        double mainBearing = getBearing(rect_b_x, rect_b_y);
+        double finalBearing = tempBearing - mainBearing;
+        double mainX = getDistance(rect_a_x, rect_a_y, rect_b_x, rect_b_y);
+        double mainY = getDistance(rect_a_x, rect_a_y, rect_c_x, rect_c_y);
+        double tempD = getDistance(rect_a_x, rect_a_y, m, n);
+        finalBearing = Math.toRadians(finalBearing);
+        userX = rect_1_x + (int)(((tempD*Math.cos(finalBearing))/(mainX))*1204);
+        userY = rect_1_y + (int)(((tempD*Math.sin(finalBearing))/(mainY))*1017);
+        Log.d("finalBearing :",""+ userX);
+        Log.d("finalDistance :",""+ userY);
+
+    }
+
+    public double getDistance(double x, double y, double m, double n){
+        Location startLocation = new Location("");
+        Location finalLocation = new Location("");
+
+        startLocation.setLatitude(x);
+        startLocation.setLongitude(y);
+        finalLocation.setLatitude(m);
+        finalLocation.setLongitude(n);
+        return startLocation.distanceTo(finalLocation);
+    }
+
+    public double getBearing(double m , double n){
+        Location startLocation = new Location("");
+        Location finalLocation = new Location("");
+
+        startLocation.setLatitude(rect_a_x);
+        startLocation.setLongitude(rect_a_y);
+        finalLocation.setLatitude(m);
+        finalLocation.setLongitude(n);
+        return startLocation.bearingTo(finalLocation);
+    }
+
     public boolean inBounds(double x, double y){
         if((x >= rect_c_x)&&(x <= rect_b_x)&&(y >= rect_a_y)&&( y <= rect_d_y)){
             return true;
@@ -159,46 +194,6 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         else{
             return false;
         }
-    }
-
-    public void changeLatLng(double x, double y){
-        double theta = 0.0;
-        if(x > rect_a_x){
-            double x1 = Math.abs(x) - Math.abs(rect_a_x);
-            x1 = Math.pow(x1, 2);
-            double y1 = Math.abs(y)- Math.abs(rect_a_y);
-            y1 = Math.pow(y1, 2);
-            double p = Math.sqrt(x1 + y1);
-            double value = Math.toRadians((rect_a_x-x)/p);
-            theta = Math.sinh(value);
-            theta = 25 - theta;
-            lat = rect_a_x - (p*Math.sin(theta));
-            lon = rect_a_y + (p*Math.cos(theta));
-        }
-        else{
-            double x1 = Math.abs(rect_a_x) - Math.abs(x);
-            x1 = Math.pow(x1, 2);
-            double y1 = Math.abs(rect_a_y) - Math.abs(y);
-            y1 = Math.pow(y1, 2);
-            double p = Math.sqrt(x1 + y1);
-            double value = Math.toRadians((rect_a_x-x)/p);
-            theta = Math.sinh(value);
-            theta = (int)(25 + theta);
-            lat = rect_a_x - (p*Math.sin(theta));
-            lon = rect_a_y + (p*Math.cos(theta));
-        }
-    }
-
-    public double calculateX(){
-        double xy = (((rect_2_x - rect_1_x)*(lon - rect_a_y))/(rect_b_y - rect_a_y));
-        double px = xy + (double)rect_1_x ;
-        return px;
-    }
-
-    public double calculateY(){
-        double xy = (((rect_3_y - rect_1_y)*(lat - rect_a_x))/(rect_b_x - rect_a_x));
-        double py = xy + (double)rect_1_y ;
-        return py;
     }
 
     @Override
@@ -301,12 +296,6 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
     public int getSpotColor(int imageId, int X, int Y) {
         ImageView image = (ImageView) findViewById(imageId);
-        /*
-        image.setDrawingCacheEnabled(true);
-        Bitmap colorSpot = Bitmap.createBitmap(image.getDrawingCache());
-        image.setDrawingCacheEnabled(false);
-        return colorSpot.getPixel(X, Y);
-        */
         if (image == null) {
             Log.d("ImageAreasActivity", "Color spot image not found");
             return 0;
@@ -336,8 +325,6 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
     protected void onStop() {
         if (mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
-//        if (mBitmap != null)
-//            mBitmap.recycle();
         super.onStop();
     }
 
@@ -527,6 +514,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
         Canvas canvas = new Canvas(mutableBitmap);
+        //canvas.drawCircle(userX + rect_1_x, userY + rect_1_y, 10, paint);
         canvas.drawCircle((int)(userX/2.15), (int)((userY - 300)/2.14), 10, paint);
 
         mCampusImage.setAdjustViewBounds(true);
