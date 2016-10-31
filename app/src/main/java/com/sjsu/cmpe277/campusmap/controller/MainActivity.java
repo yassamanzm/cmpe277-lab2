@@ -63,6 +63,10 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
     private ImageView mCampusImage;
     private Bitmap mBitmap;
+    private boolean mShowUserLocation;
+    private int userX;
+    private int userY;
+    private String searchQuery;
 
     private int rect_1_x = 94;
     private int rect_1_y = 734;
@@ -104,14 +108,12 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                Toast.makeText(getBaseContext(), query, Toast.LENGTH_LONG).show();
                 shouldHighlightBuilding(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //Toast.makeText(getBaseContext(), newText, Toast.LENGTH_LONG).show();
                 shouldHighlightBuilding(newText);
                 return false;
             }
@@ -129,11 +131,13 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
                 Toast.makeText(getApplicationContext(),
                         "("+ mCurrentLocation.getLatitude() + ", " + mCurrentLocation.getLongitude() + ")", Toast.LENGTH_LONG).show();
 
-                // TODO:  calculate x and y here
+                mShowUserLocation = true;
+                
+                // calculate user's x and y here
                 changeLatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                int x = (int)Math.round(calculateX());
-                int y = (int)Math.round(calculateY());
-                drawUserLocation(x,y);
+                userX = (int)Math.round(calculateX());
+                userY = (int)Math.round(calculateY());
+                drawUserLocation();
             }
         });
 
@@ -496,7 +500,7 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         }
     }
 
-    private void drawUserLocation(int centerX, int centerY ) {
+    private void drawUserLocation() {
 
         Paint paint = new Paint();
         paint.setAntiAlias(true);
@@ -506,14 +510,14 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
         Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
         Canvas canvas = new Canvas(mutableBitmap);
-        canvas.drawCircle((int)(centerX/2.15), (int)((centerY - 300)/2.14), 10, paint);
+        canvas.drawCircle((int)(userX/2.15), (int)((userY - 300)/2.14), 10, paint);
 
         mCampusImage.setAdjustViewBounds(true);
         mCampusImage.setImageBitmap(mutableBitmap);
         mCampusImage.invalidate();
     }
 
-    private void drawRectangle(float leftX, float topY, float rightX, float bottomY ) {
+    private void highlightBuilding(float leftX, float topY, float rightX, float bottomY ) {
 
         Paint paint = new Paint();
         paint.setAntiAlias(true);
@@ -523,10 +527,14 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
 
         Bitmap workingBitmap = Bitmap.createBitmap(mBitmap);
         Bitmap mutableBitmap  = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
-        mutableBitmap .setHasAlpha(true);
+        mutableBitmap.setHasAlpha(true);
 
         Canvas canvas = new Canvas(mutableBitmap);
         canvas.drawRoundRect(new RectF(leftX, topY, rightX, bottomY), 2, 2, paint);
+
+        if (mShowUserLocation) {
+            canvas.drawCircle((int)(userX/2.15), (int)((userY - 300)/2.14), 10, paint);
+        }
 
         mCampusImage.setAdjustViewBounds(true);
         mCampusImage.setImageBitmap(mutableBitmap);
@@ -557,11 +565,14 @@ public class MainActivity extends FragmentActivity implements View.OnTouchListen
             Log.d(TAG, "Rectangle Coordinates: (" + building.getLeftX()  + ", " + building.getTopY() + ") " +
                     "( " + building.getRightX() + ", " +  building.getBottomY() + ")");
             // draw the rectangle or put a marker
-            drawRectangle(building.getLeftX(), building.getTopY(), building.getRightX(), building.getBottomY());
+            highlightBuilding(building.getLeftX(), building.getTopY(), building.getRightX(), building.getBottomY());
             return true;
         }
-        // clear the map if necessary
+        // the string couldn't be found, clear the map if necessary
         clearMap();
+        if (mShowUserLocation) {
+            drawUserLocation();
+        }
 //        Toast.makeText(getBaseContext(), R.string.not_found_building, Toast.LENGTH_LONG).show();
         return false;
     }
